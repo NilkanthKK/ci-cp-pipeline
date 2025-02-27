@@ -22,13 +22,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Deploy to Server
-        env:
-
-          SSH_USERNAME: 'NilkanthKK'
-          SSH_PASS: 'Koffee@2024'
+      - name: Setup SSH Key
         run: |
+          mkdir -p ~/.ssh
+          echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQClqbRcNGaONzyRcYEyLf4di7invKKEuEVeHQEW41v/6KPNGF6Q/BgxiyBzsQvSVEMeqZCmswvnjnuvzbY4bPB0A5yiT5bxz4KSN7VCS3hHk9CQ8ZDb/y46z7qD96F+Vy4gNkxB+U5qtrtpzn4g65zw/Pbk0YMAaf/hbzkqQzz3hSb5uGj3sj2SfbcM7kvvz5mGkYd4wrDWXR2jfQWb0T06cgK45nax6t6NUyJ0EXmKljJPeGUE40qBTesOdg+N2RGUpVM83OWCEuJEsDLNmcQR1Y5tYQxfU0EDcBaAuTTZFdk2R4H1CZjsM8KNHg7zUcoAq5Kh4LHKxy9PeZqU+dpWaasK0wx5ovYmEvRIoIw2Vzp24lrgE65w1mWIBHeoLMSCEzmMJsUO6TG09WJVgmoowwkRs4fwh9AlLRMQe3wrdNWIA4TE2u3XHhK5cv5GZT8O2pvyZ3tWtkvgpGsivQVBjvBl7K87ZtYQTH1gnYDxZAFeirpruq2yd1C2+nQNkYIhbZL36vKzGIoLIP+/9xeyDieBTZIg5Xi1uf1bF4rLGRRGktk6//VfTnSft4m4j14Ky9MCAICRDhJBQU06xhrSJAfwVTDhSoqOBKgU+iRHC0FcEXgDPpGk5W5s4tqHj8+g55NOWL2iE18lnYDiDb0tKh1rbFPiu+DStWv3YB1Hkw== nilkanth.koffeekodes@gmail.com" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-          git pull git@github.com:NilkanthKK/ci-cp-pipeline.git &&
-          sudo systemctl restart supervisor &&
-          exit
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no user@your-server-ip << 'EOF'
+            cd /path/to/your/project
+            git pull git@github.com:NilkanthKK/ci-cp-pipeline.git
+            source /path/to/your/venv/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py collectstatic --noinput
+            sudo systemctl restart supervisor
+          EOF
