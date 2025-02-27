@@ -1,4 +1,4 @@
-name: Deploy to Render
+name: Django CI/CD
 
 on:
   push:
@@ -6,21 +6,32 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Deploy to Render
+      - name: Deploy to Server
         env:
-          GIT_USER: 'nilkanth'
-          GIT_PASSWORD: 'koffee@2024'
+
+          SSH_USERNAME: 'nilkanth'
+          SSH_PASS: 'Koffee@2024'
         run: |
-          git push https://${GIT_USER}:${GIT_PASSWORD}@github.com/Nilkanth/booksinfo.git main
+          sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$DROPLET_IP << EOF
+          cd book &&
+          ls &&
+          pwd &&
+          git pull https://$SSH_USERNAME:$SSH_PASS@github.com/$SSH_USERNAME/booksinfo.git &&
+          sudo systemctl restart supervisor &&
+          exit
