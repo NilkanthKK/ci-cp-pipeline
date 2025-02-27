@@ -19,8 +19,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Deploy to Render
-        env:
-          GIT_USER: ${{ secrets.GIT_USER }}
-          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
+
         run: |
           git push https://${GIT_USER}:${GIT_PASSWORD}@github.com/Nilkanth/booksinfo.git main
