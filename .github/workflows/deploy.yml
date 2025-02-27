@@ -29,6 +29,6 @@ jobs:
           SSH_PASS: 'Koffee@2024'
         run: |
 
-          git pull https://$SSH_USERNAME:$SSH_PASS@github.com/$SSH_USERNAME/booksinfo.git &&
+          git pull git@github.com:NilkanthKK/ci-cp-pipeline.git &&
           sudo systemctl restart supervisor &&
           exit
