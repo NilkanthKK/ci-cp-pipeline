@@ -1,4 +1,4 @@
-name: Django CI/CD
+name: Deploy to Render
 
 on:
   push:
@@ -6,36 +6,21 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Deploy to Server
+      - name: Deploy to Render
         env:
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          DROPLET_IP: ${{ secrets.DROPLET_IP }}  
-          SSH_USERNAME: ${{ secrets.GIT_USER }}
-          SSH_PASS: ${{ secrets.GIT_PASSWORD }}
+          GIT_USER: ${{ secrets.GIT_USER }}
+          GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
         run: |
-          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$DROPLET_IP << 'EOF'
-          cd ci-cp-pipeline &&
-          git pull https://$SSH_USERNAME:$SSH_PASS@github.com/$SSH_USERNAME/ci-cp-pipeline.git &&
-          pip install -r requirements.txt &&
-          python manage.py migrate &&
-          python manage.py collectstatic --noinput &&
-          sudo systemctl restart supervisor &&
-          exit
-          EOF
+          git push https://${GIT_USER}:${GIT_PASSWORD}@github.com/Nilkanth/booksinfo.git main
