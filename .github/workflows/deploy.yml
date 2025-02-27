@@ -28,10 +28,7 @@ jobs:
           SSH_USERNAME: 'nilkanth'
           SSH_PASS: 'Koffee@2024'
         run: |
-          sshpass -p $SSH_PASSWORD ssh -o StrictHostKeyChecking=no $SSH_USER@$DROPLET_IP << EOF
-          cd book &&
-          ls &&
-          pwd &&
+
           git pull https://$SSH_USERNAME:$SSH_PASS@github.com/$SSH_USERNAME/booksinfo.git &&
           sudo systemctl restart supervisor &&
           exit
