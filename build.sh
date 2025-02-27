@@ -9,3 +9,4 @@ if [[$CRETE_SUPERUSER]];
 then 
     python manage.py createsuperuser --no-input--email "$DJANGO_SUPERUSER_EMAIL"
 fi 
+ 
